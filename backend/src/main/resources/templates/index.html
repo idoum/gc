@@ -1,44 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: layout(~{::main})}">
-<body>
-<main th:with="lang=${lang}?:${param.lang}?:'fr'">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::main})">
+<main th:with="lang=${lang} ?: 'fr'">
   <div class="py-4">
-    <h1 class="h3 mb-3" th:text="#{home.title}">Gestion commerciale</h1>
-    <p class="text-muted" th:text="#{home.lead}">
-      Bienvenue dans l'application de démonstration.
-    </p>
+    <h1 class="h3 mb-3" th:text="#{home.title}">Bienvenue</h1>
+    <p class="lead" th:text="#{home.lead}">Choisissez une section dans la barre de navigation.</p>
 
-    <div class="row g-3">
-      <div class="col-sm-6 col-lg-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h2 class="h5" th:text="#{menu.products}">Produits</h2>
-            <p class="text-muted" th:text="#{home.products.desc}">
-              Consulter et rechercher les produits.
-            </p>
-            <a class="btn btn-primary"
-               th:href="@{/{lang}/products(lang=${lang})}"
-               th:text="#{action.open}">Ouvrir</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-sm-6 col-lg-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <h2 class="h5" th:text="#{menu.customers}">Clients</h2>
-            <p class="text-muted" th:text="#{home.customers.desc}">
-              Consulter et rechercher les clients.
-            </p>
-            <a class="btn btn-primary"
-               th:href="@{/{lang}/customers(lang=${lang})}"
-               th:text="#{action.open}">Ouvrir</a>
-          </div>
-        </div>
-      </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-primary" th:href="@{/{lang}/products(lang=${lang})}">Produits</a>
+      <a class="btn btn-outline-primary" th:href="@{/{lang}/customers(lang=${lang})}">Clients</a>
     </div>
   </div>
 </main>
-</body>
 </html>

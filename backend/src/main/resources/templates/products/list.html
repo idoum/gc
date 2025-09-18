@@ -1,82 +1,66 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: layout(~{::main})}">
-<body>
-<main th:with="lang=${lang}?:${param.lang}?:'fr'">
-  <div class="d-flex align-items-center justify-content-between mb-3">
-    <h1 class="h4 m-0" th:text="#{products.title}">Produits</h1>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::main})">
+<main th:with="lang=${lang} ?: 'fr'">
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-2">
+    <h1 class="h4 m-0">Produits</h1>
 
-    <form class="d-flex" role="search" th:action="@{/{lang}/products(lang=${lang})}" method="get">
-      <input class="form-control me-2" type="search" name="q"
-             th:value="${q}" placeholder="Rechercher…" aria-label="Search" />
-      <button class="btn btn-outline-primary" type="submit" th:text="#{search}">Rechercher</button>
+    <form class="d-flex" method="get" th:action="@{/{lang}/products(lang=${lang})}">
+      <input class="form-control me-2" type="search" name="q" placeholder="Rechercher…" th:value="${q}">
+      <button class="btn btn-outline-primary" type="submit">Rechercher</button>
     </form>
   </div>
 
-  <div class="table-responsive">
-    <table class="table table-sm align-middle">
-      <thead class="table-light">
+  <div class="table-responsive mt-3">
+    <table class="table align-middle">
+      <thead>
         <tr>
           <th>SKU</th>
-          <th th:text="#{product.name}">Nom</th>
-          <th class="text-end" th:text="#{product.price}">Prix</th>
-          <th class="text-center" th:text="#{product.active}">Actif</th>
-          <th class="text-end" th:text="#{actions}">Actions</th>
+          <th>Nom</th>
+          <th class="text-end">Prix</th>
+          <th>Actif</th>
+          <th style="width: 120px;">Actions</th>
         </tr>
       </thead>
-      <tbody id="rows">
-        <tr th:each="p : ${data.content}" th:id="|row-${p.id}|">
+      <tbody id="products-body">
+        <tr th:each="p : ${data.content}" th:id="${'row-' + p.id}">
           <td th:text="${p.sku}">SKU-001</td>
           <td th:text="${p.name}">Article démo</td>
-          <td class="text-end" th:text="${#numbers.formatDecimal(p.price,1,2)}">0.00</td>
-          <td class="text-center">
-            <span class="badge" th:classappend="${p.active} ? 'bg-success' : 'bg-secondary'"
-                  th:text="${p.active} ? 'Oui' : 'Non'">Oui</span>
+          <td class="text-end" th:text="${#numbers.formatDecimal(p.price, 1, 'COMMA', 2, 'POINT')}">9,99</td>
+          <td>
+            <span th:text="${p.active} ? 'Oui' : 'Non'">Oui</span>
           </td>
-          <td class="text-end">
-            <form th:action="@{/{lang}/products/{id}/delete(lang=${lang}, id=${p.id})}"
-                  method="post"
-                  hx-post
-                  hx-target="closest tr"
-                  hx-swap="outerHTML"
-                  onsubmit="return confirm('Supprimer ?');">
-              <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
-              <button type="submit" class="btn btn-sm btn-outline-danger" th:text="#{delete}">Supprimer</button>
-            </form>
+          <td>
+            <button
+              class="btn btn-sm btn-outline-danger"
+              th:attr="hx-post=@{/{lang}/products/{id}/delete(lang=${lang}, id=${p.id})}"
+              hx-target="closest tr"
+              hx-swap="outerHTML"
+              hx-confirm="Supprimer ce produit ?">
+              Supprimer
+            </button>
           </td>
-        </tr>
-        <tr th:if="${#lists.isEmpty(data.content)}">
-          <td colspan="5" class="text-center text-muted py-4" th:text="#{empty}">Aucun élément</td>
         </tr>
       </tbody>
     </table>
   </div>
 
   <!-- Pagination -->
-  <nav th:if="${data.totalPages > 1}" aria-label="Pagination">
-    <ul class="pagination">
-      <li class="page-item" th:classappend="${data.first} ? 'disabled'">
-        <a class="page-link"
-           th:href="@{/{lang}/products(lang=${lang}, q=${q}, page=${data.number-1}, size=${data.size})}"
-           th:text="#{prev}">Précédent</a>
-      </li>
+  <nav th:if="${data.totalPages > 1}" class="d-flex justify-content-between">
+    <a class="btn btn-outline-secondary btn-sm"
+       th:classappend="${data.first} ? ' disabled' : ''"
+       th:href="@{/{lang}/products(lang=${lang}, q=${q}, page=${data.number - 1}, size=${data.size})}">
+      Précédent
+    </a>
 
-      <li class="page-item disabled">
-        <span class="page-link">
-          <span th:text="#{page}">Page</span>
-          <span th:text="${data.number + 1}">1</span>
-          /
-          <span th:text="${data.totalPages}">1</span>
-        </span>
-      </li>
+    <span class="text-muted small align-self-center">
+      Page <span th:text="${data.number + 1}">1</span>/<span th:text="${data.totalPages}">1</span>
+    </span>
 
-      <li class="page-item" th:classappend="${data.last} ? 'disabled'">
-        <a class="page-link"
-           th:href="@{/{lang}/products(lang=${lang}, q=${q}, page=${data.number+1}, size=${data.size})}"
-           th:text="#{next}">Suivant</a>
-      </li>
-    </ul>
+    <a class="btn btn-outline-secondary btn-sm"
+       th:classappend="${data.last} ? ' disabled' : ''"
+       th:href="@{/{lang}/products(lang=${lang}, q=${q}, page=${data.number + 1}, size=${data.size})}">
+      Suivant
+    </a>
   </nav>
 </main>
-</body>
 </html>
