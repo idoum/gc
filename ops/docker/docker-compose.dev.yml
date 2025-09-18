@@ -1,0 +1,33 @@
+﻿services:
+  mysql:
+    image: mysql:8.0
+    container_name: gc_mysql
+    ports: ["3307:3306"]
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:-gcroot}
+      MYSQL_DATABASE: ${DB_NAME:-gcdb}
+      MYSQL_USER: ${DB_USER:-gcuser}
+      MYSQL_PASSWORD: ${DB_PASS:-gcpass}
+      TZ: UTC
+    command:
+      - "--default-authentication-plugin=caching_sha2_password"
+      - "--character-set-server=utf8mb4"
+      - "--collation-server=utf8mb4_unicode_ci"
+      - "--skip-log-bin"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${DB_ROOT_PASS}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: gc_mailhog
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # UI
+
+volumes:
+  mysql_data:

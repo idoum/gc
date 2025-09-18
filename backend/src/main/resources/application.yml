@@ -1,0 +1,8 @@
+﻿spring:
+  application:
+    name: gc-backend
+  profiles:
+    active: ${APP_ENV:dev}
+
+server:
+  port: ${APP_PORT:8080}
