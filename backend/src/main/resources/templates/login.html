@@ -1,49 +1,54 @@
-<!-- src/main/resources/templates/login.html -->
-<div th:replace="~{_fragments/layout :: layout(~{::main})}"
-     xmlns:th="http://www.thymeleaf.org">
+<!-- Page fine qui s'appuie sur layout : un seul formulaire -->
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="layout :: layout(~{::main})"
+      th:with="lang=${lang}?:'fr'">
   <main>
     <div class="row justify-content-center">
-      <div class="col-lg-6 col-xl-5">
+      <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
         <div class="card shadow-sm">
           <div class="card-body p-4">
-            <h2 class="h4 text-center mb-4" th:text="#{login.title}">Connexion</h2>
+            <h1 class="h4 mb-4 text-center" th:text="#{login.title}">Connexion</h1>
 
-            <form method="post" action="/login">
-              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <!-- Alertes -->
+            <div th:if="${param.error}" class="alert alert-danger py-2" role="alert">
+              <span th:text="#{login.error}">Identifiants invalides.</span>
+            </div>
+            <div th:if="${param.logout}" class="alert alert-success py-2" role="alert">
+              <span th:text="#{login.loggedout}">Vous êtes déconnecté.</span>
+            </div>
 
+            <form method="post" action="/login" novalidate>
+              <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}" />
               <div class="mb-3">
-                <label class="form-label" for="username" th:text="#{login.username}">Nom d'utilisateur</label>
-                <input class="form-control" id="username" name="username" type="email"
-                       value="admin@example.com" autocomplete="username" required/>
+                <label for="username" class="form-label" th:text="#{login.username}">Nom d'utilisateur</label>
+                <input id="username" name="username" type="text" class="form-control"
+                       autocomplete="username" value="admin@example.com" />
               </div>
-
               <div class="mb-3">
-                <label class="form-label" for="password" th:text="#{login.password}">Mot de passe</label>
-                <input class="form-control" id="password" name="password" type="password"
-                       value="password" autocomplete="current-password" required/>
+                <label for="password" class="form-label" th:text="#{login.password}">Mot de passe</label>
+                <input id="password" name="password" type="password" class="form-control"
+                       autocomplete="current-password" value="password" />
               </div>
-
               <div class="form-check mb-3">
-                <input class="form-check-input" type="checkbox" id="remember-me" name="remember-me"/>
+                <input class="form-check-input" type="checkbox" id="remember-me" name="remember-me" />
                 <label class="form-check-label" for="remember-me" th:text="#{login.remember}">Se souvenir de moi</label>
               </div>
-
               <button class="btn btn-primary w-100" type="submit" th:text="#{login.submit}">Se connecter</button>
-
-              <div class="text-center mt-3">
-                <a class="small" th:href="@{/{lang}(lang=${#locale.language})}" th:text="#{back.home}">← Retour à l'accueil</a>
-              </div>
-
-              <div class="text-center mt-3 small">
-                <span th:text="#{langue} + ' : '">Langue :</span>
-                <a th:href="@{/{lang}/login(lang='fr')}" class="me-1">FR</a> ·
-                <a th:href="@{/{lang}/login(lang='en')}" class="ms-1">EN</a>
-              </div>
             </form>
 
+            <div class="text-center mt-3">
+              <a class="small" th:href="@{/{lang}(lang=${lang})}" th:text="#{back.home}">← Retour à l'accueil</a>
+            </div>
+
+            <div class="text-center mt-3 text-muted small">
+              <span th:text="#{langue}">Langue</span> :
+              <a th:href="@{/{lang}(lang='fr')}" th:classappend="${lang=='fr'} ? 'fw-bold'">FR</a>
+              ·
+              <a th:href="@{/{lang}(lang='en')}" th:classappend="${lang=='en'} ? 'fw-bold'">EN</a>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </main>
-</div>
+</html>
